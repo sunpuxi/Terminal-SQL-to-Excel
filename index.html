@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQL Result → Excel</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="hero">
+        <div class="brand-mark" aria-hidden="true">SQL</div>
+        <div>
+          <p class="eyebrow">LOCAL DATA TOOL</p>
+          <h1>SQL Result <span>→</span> Excel</h1>
+          <p class="subtitle">粘贴 MySQL 控制台查询结果，立即整理并导出为 Excel。</p>
+        </div>
+      </header>
+
+      <section class="panel input-panel" aria-labelledby="input-title">
+        <div class="section-heading">
+          <div>
+            <p class="step">01 / 粘贴</p>
+            <h2 id="input-title">MySQL 控制台结果</h2>
+          </div>
+          <span class="local-badge"><span aria-hidden="true">●</span> 仅本地处理</span>
+        </div>
+
+        <label class="sr-only" for="sql-input">粘贴 MySQL 控制台查询结果</label>
+        <textarea
+          id="sql-input"
+          spellcheck="false"
+          placeholder="mysql&gt; SELECT id, name, status FROM users;&#10;+----+----------+--------+&#10;| id | name     | status |&#10;+----+----------+--------+&#10;| 1  | Alice    | active |&#10;| 2  | Bob      | closed |&#10;+----+----------+--------+"
+        ></textarea>
+
+        <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+
+        <div class="toolbar">
+          <button id="clear-button" class="button button-quiet" type="button" disabled>清空</button>
+          <p id="input-count" class="input-count">等待粘贴数据</p>
+          <button id="parse-button" class="button button-primary" type="button">解析数据 <span>→</span></button>
+        </div>
+      </section>
+
+      <section id="preview-section" class="panel preview-panel" aria-labelledby="preview-title" hidden>
+        <div class="section-heading preview-heading">
+          <div>
+            <p class="step">02 / 检查并导出</p>
+            <h2 id="preview-title">数据预览</h2>
+          </div>
+          <div class="stats" aria-label="解析统计">
+            <span><strong id="row-count">0</strong> 行数据</span>
+            <span><strong id="column-count">0</strong> 个字段</span>
+          </div>
+        </div>
+
+        <p id="preview-note" class="preview-note"></p>
+        <div class="column-picker" aria-labelledby="column-picker-title">
+          <div class="column-picker-heading">
+            <div>
+              <p id="column-picker-title" class="column-picker-title">选择导出字段</p>
+              <p id="selection-summary" class="column-picker-copy">默认导出全部字段</p>
+            </div>
+            <div class="column-actions">
+              <button id="select-all-columns" type="button">全选</button>
+              <button id="clear-all-columns" type="button">取消全选</button>
+            </div>
+          </div>
+          <div id="column-options" class="column-options"></div>
+        </div>
+        <div class="table-wrap" tabindex="0" aria-label="查询结果预览">
+          <table id="preview-table"></table>
+        </div>
+
+        <div class="export-row">
+          <div>
+            <p class="export-title">数据检查无误？</p>
+            <p id="export-copy" class="export-copy">Excel 将包含全部已解析数据。</p>
+          </div>
+          <button id="export-button" class="button button-export" type="button">
+            <span aria-hidden="true">⇩</span> 导出 Excel
+          </button>
+        </div>
+      </section>
+
+      <footer><span aria-hidden="true">⌾</span> 所有数据均在浏览器本地处理，不会上传到任何服务器。</footer>
+    </main>
+
+    <script src="./libs/xlsx.full.min.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
