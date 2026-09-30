@@ -82,8 +82,11 @@ textarea:focus { border-color: var(--green); background: white; box-shadow: 0 0 
 .stats strong { margin-right: 3px; color: var(--ink); font-size: 14px; }
 .preview-note { margin: 0; padding: 0 28px 15px; color: var(--muted); font-size: 12px; }
 .column-picker { margin: 0 28px 22px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fafcfa; }
+.preview-column-picker { border-color: #cfded5; background: #f6faf7; }
+.export-column-picker { margin-top: 22px; margin-bottom: 0; border-color: #d9dce7; background: #fafafd; }
 .column-picker-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 12px; }
 .column-picker-title { margin: 0 0 3px; font-size: 13px; font-weight: 750; }
+.column-picker-title span { margin-left: 6px; color: var(--muted); font-size: 10px; font-weight: 550; }
 .column-picker-copy { margin: 0; color: var(--muted); font-size: 11px; }
 .column-picker-copy.selection-error { color: var(--red); font-weight: 650; }
 .column-actions { display: flex; gap: 7px; }
@@ -95,6 +98,7 @@ textarea:focus { border-color: var(--green); background: white; box-shadow: 0 0 
 .column-option:hover { border-color: #9bc5ad; }
 .column-option input { width: 14px; height: 14px; margin: 0; accent-color: var(--green); cursor: pointer; }
 .table-wrap { max-height: 480px; overflow: auto; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.table-empty { padding: 40px 20px; color: var(--muted); text-align: center; font-size: 13px; }
 table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; white-space: nowrap; }
 th, td { max-width: 420px; overflow: hidden; padding: 11px 16px; border-right: 1px solid #e8ede9; border-bottom: 1px solid #e8ede9; text-align: left; text-overflow: ellipsis; }
 th { position: sticky; top: 0; z-index: 1; background: #edf4ef; color: #2e4938; font-size: 12px; font-weight: 750; letter-spacing: .02em; }

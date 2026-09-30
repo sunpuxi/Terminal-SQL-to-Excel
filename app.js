@@ -114,8 +114,12 @@
   const previewNote = document.getElementById("preview-note");
   const rowCount = document.getElementById("row-count");
   const columnCount = document.getElementById("column-count");
-  const columnOptions = document.getElementById("column-options");
-  const selectionSummary = document.getElementById("selection-summary");
+  const previewColumnOptions = document.getElementById("preview-column-options");
+  const previewSelectionSummary = document.getElementById("preview-selection-summary");
+  const showAllColumns = document.getElementById("show-all-columns");
+  const hideAllColumns = document.getElementById("hide-all-columns");
+  const exportColumnOptions = document.getElementById("export-column-options");
+  const exportSelectionSummary = document.getElementById("export-selection-summary");
   const selectAllColumns = document.getElementById("select-all-columns");
   const clearAllColumns = document.getElementById("clear-all-columns");
   const exportCopy = document.getElementById("export-copy");
@@ -132,21 +136,22 @@
     parsedResult = null;
     previewSection.hidden = true;
     previewTable.replaceChildren();
-    columnOptions.replaceChildren();
+    previewColumnOptions.replaceChildren();
+    exportColumnOptions.replaceChildren();
   }
 
-  function getSelectedColumnIndexes() {
-    return Array.from(columnOptions.querySelectorAll("input:checked")).map(function (checkbox) {
+  function getSelectedColumnIndexes(container) {
+    return Array.from(container.querySelectorAll("input:checked")).map(function (checkbox) {
       return Number(checkbox.value);
     });
   }
 
-  function updateColumnSelectionState() {
+  function updateExportSelectionState() {
     if (!parsedResult) return;
-    const selectedCount = getSelectedColumnIndexes().length;
+    const selectedCount = getSelectedColumnIndexes(exportColumnOptions).length;
     const totalCount = parsedResult.columnCount;
-    selectionSummary.classList.toggle("selection-error", selectedCount === 0);
-    selectionSummary.textContent = selectedCount === 0
+    exportSelectionSummary.classList.toggle("selection-error", selectedCount === 0);
+    exportSelectionSummary.textContent = selectedCount === 0
       ? "请至少选择 1 个要导出的字段"
       : "已选择 " + selectedCount + " / " + totalCount + " 个字段";
     exportCopy.textContent = selectedCount === totalCount
@@ -156,7 +161,7 @@
         : "当前未选择任何导出字段。";
   }
 
-  function renderColumnSelector(headers) {
+  function createColumnOptions(container, headers) {
     const fragment = document.createDocumentFragment();
     headers.forEach(function (header, index) {
       const label = document.createElement("label");
@@ -171,8 +176,18 @@
       label.append(checkbox, text);
       fragment.appendChild(label);
     });
-    columnOptions.replaceChildren(fragment);
-    updateColumnSelectionState();
+    container.replaceChildren(fragment);
+  }
+
+  function updatePreviewSelection() {
+    if (!parsedResult) return;
+    const selectedIndexes = getSelectedColumnIndexes(previewColumnOptions);
+    const selectedCount = selectedIndexes.length;
+    previewSelectionSummary.classList.toggle("selection-error", selectedCount === 0);
+    previewSelectionSummary.textContent = selectedCount === 0
+      ? "当前未显示任何字段，请选择至少 1 个字段"
+      : "正在显示 " + selectedCount + " / " + parsedResult.columnCount + " 个字段，不影响 Excel 导出";
+    renderPreviewTable(parsedResult, selectedIndexes);
   }
 
   function updateInputState() {
@@ -189,10 +204,18 @@
     inputCount.textContent = candidateRows > 0 ? "检测到 " + Math.max(candidateRows - 1, 0) + " 行候选数据" : "尚未检测到表格数据";
   }
 
-  function renderTable(result) {
+  function renderPreviewTable(result, selectedIndexes) {
+    if (!selectedIndexes.length) {
+      const empty = document.createElement("caption");
+      empty.className = "table-empty";
+      empty.textContent = "未选择预览字段";
+      previewTable.replaceChildren(empty);
+      return;
+    }
     const head = document.createElement("thead");
     const headRow = document.createElement("tr");
-    result.headers.forEach(function (header) {
+    selectedIndexes.forEach(function (columnIndex) {
+      const header = result.headers[columnIndex];
       const th = document.createElement("th");
       th.textContent = header;
       th.title = header;
@@ -203,7 +226,8 @@
     const body = document.createElement("tbody");
     result.rows.slice(0, PREVIEW_LIMIT).forEach(function (row) {
       const tr = document.createElement("tr");
-      row.forEach(function (value) {
+      selectedIndexes.forEach(function (columnIndex) {
+        const value = row[columnIndex];
         const td = document.createElement("td");
         td.textContent = value === "" ? "空" : value;
         td.title = value;
@@ -214,12 +238,18 @@
     });
 
     previewTable.replaceChildren(head, body);
+  }
+
+  function renderResult(result) {
     rowCount.textContent = String(result.rowCount);
     columnCount.textContent = String(result.columnCount);
     previewNote.textContent = result.rowCount > PREVIEW_LIMIT
       ? "当前共有 " + result.rowCount + " 行数据，仅预览前 " + PREVIEW_LIMIT + " 行；导出时仍会包含全部数据。"
       : "已解析全部数据，请确认表头和内容后导出。";
-    renderColumnSelector(result.headers);
+    createColumnOptions(previewColumnOptions, result.headers);
+    createColumnOptions(exportColumnOptions, result.headers);
+    updatePreviewSelection();
+    updateExportSelectionState();
     previewSection.hidden = false;
   }
 
@@ -232,7 +262,7 @@
       return false;
     }
     parsedResult = result;
-    renderTable(result);
+    renderResult(result);
     if (result.rowCount > LARGE_DATASET_SIZE) {
       setMessage("当前数据量较大，解析和导出可能需要一些时间。", "warning");
     }
@@ -263,16 +293,27 @@
     input.focus();
   });
 
-  columnOptions.addEventListener("change", updateColumnSelectionState);
+  previewColumnOptions.addEventListener("change", updatePreviewSelection);
+  exportColumnOptions.addEventListener("change", updateExportSelectionState);
+
+  showAllColumns.addEventListener("click", function () {
+    previewColumnOptions.querySelectorAll("input").forEach(function (checkbox) { checkbox.checked = true; });
+    updatePreviewSelection();
+  });
+
+  hideAllColumns.addEventListener("click", function () {
+    previewColumnOptions.querySelectorAll("input").forEach(function (checkbox) { checkbox.checked = false; });
+    updatePreviewSelection();
+  });
 
   selectAllColumns.addEventListener("click", function () {
-    columnOptions.querySelectorAll("input").forEach(function (checkbox) { checkbox.checked = true; });
-    updateColumnSelectionState();
+    exportColumnOptions.querySelectorAll("input").forEach(function (checkbox) { checkbox.checked = true; });
+    updateExportSelectionState();
   });
 
   clearAllColumns.addEventListener("click", function () {
-    columnOptions.querySelectorAll("input").forEach(function (checkbox) { checkbox.checked = false; });
-    updateColumnSelectionState();
+    exportColumnOptions.querySelectorAll("input").forEach(function (checkbox) { checkbox.checked = false; });
+    updateExportSelectionState();
   });
 
   exportButton.addEventListener("click", function () {
@@ -283,7 +324,7 @@
     }
 
     try {
-      const selectedIndexes = getSelectedColumnIndexes();
+      const selectedIndexes = getSelectedColumnIndexes(exportColumnOptions);
       if (!selectedIndexes.length) {
         setMessage("请至少选择 1 个要导出的字段。", "error");
         return;

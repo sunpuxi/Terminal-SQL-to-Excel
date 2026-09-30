@@ -55,21 +55,35 @@
         </div>
 
         <p id="preview-note" class="preview-note"></p>
-        <div class="column-picker" aria-labelledby="column-picker-title">
+        <div class="column-picker preview-column-picker" aria-labelledby="preview-column-picker-title">
           <div class="column-picker-heading">
             <div>
-              <p id="column-picker-title" class="column-picker-title">选择导出字段</p>
-              <p id="selection-summary" class="column-picker-copy">默认导出全部字段</p>
+              <p id="preview-column-picker-title" class="column-picker-title">选择预览字段 <span>仅影响网页显示</span></p>
+              <p id="preview-selection-summary" class="column-picker-copy">默认显示全部字段，不影响 Excel 导出</p>
+            </div>
+            <div class="column-actions">
+              <button id="show-all-columns" type="button">全部显示</button>
+              <button id="hide-all-columns" type="button">全部隐藏</button>
+            </div>
+          </div>
+          <div id="preview-column-options" class="column-options"></div>
+        </div>
+        <div class="table-wrap" tabindex="0" aria-label="查询结果预览">
+          <table id="preview-table"></table>
+        </div>
+
+        <div class="column-picker export-column-picker" aria-labelledby="export-column-picker-title">
+          <div class="column-picker-heading">
+            <div>
+              <p id="export-column-picker-title" class="column-picker-title">选择 Excel 导出字段 <span>仅影响导出文件</span></p>
+              <p id="export-selection-summary" class="column-picker-copy">默认导出全部字段，不影响上方预览</p>
             </div>
             <div class="column-actions">
               <button id="select-all-columns" type="button">全选</button>
               <button id="clear-all-columns" type="button">取消全选</button>
             </div>
           </div>
-          <div id="column-options" class="column-options"></div>
-        </div>
-        <div class="table-wrap" tabindex="0" aria-label="查询结果预览">
-          <table id="preview-table"></table>
+          <div id="export-column-options" class="column-options"></div>
         </div>
 
         <div class="export-row">
